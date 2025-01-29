@@ -17,7 +17,7 @@ private:
     vector<Teacher*> teachers;
 
 public:
-    Course(const std::string& name);
+    Course(const string& name);
     void enroll_Student(Student* student);
     void assign_Teacher(Teacher* teacher);
     void display_Students() const;
