@@ -11,7 +11,8 @@ int main(int argc, char* argv[])
     }
 
     ifstream file(argv[1]);
-    if (!file) {
+    if (!file) 
+    {
         cout << "Error: File not found.\n";
         return 1;
     }
