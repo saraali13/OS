@@ -1,19 +1,24 @@
+# Compiler
+CXX = g++
+CXXFLAGS = -Wall -std=c++11
+
+# Targets
 all: main
 
-main: Main.o LetterCount.o WordCount.o LineCount.o
-	g++ -o main Main.o LetterCount.o WordCount.o LineCount.o
+main: main.o LetterCount.o WordCount.o LineCount.o
+	$(CXX) $(CXXFLAGS) -o main main.o LetterCount.o WordCount.o LineCount.o
 
-Main.o: Main.cpp
-	g++ -c Main.cpp
+main.o: main.cpp LetterCount.h WordCount.h LineCount.h
+	$(CXX) $(CXXFLAGS) -c main.cpp
 
 LetterCount.o: LetterCount.cpp LetterCount.h
-	g++ -c LetterCount.cpp
+	$(CXX) $(CXXFLAGS) -c LetterCount.cpp
 
 WordCount.o: WordCount.cpp WordCount.h
-	g++ -c WordCount.cpp
+	$(CXX) $(CXXFLAGS) -c WordCount.cpp
 
 LineCount.o: LineCount.cpp LineCount.h
-	g++ -c LineCount.cpp
+	$(CXX) $(CXXFLAGS) -c LineCount.cpp
 
 clean:
 	rm -f *.o main
