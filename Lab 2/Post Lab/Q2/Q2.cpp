@@ -6,14 +6,13 @@ using namespace std;
 
 int findMissing(int arr[], int n)
 {
-    int max_num = *max_element(arr, arr + n - 1); // Find max number in array
-    int total = (max_num * (max_num + 1)) / 2;    // Correct sum formula
+    int total = ((n+1) * (n+2)) / 2;    // Correct sum formula
 
     int sum = 0;
     for (int i = 0; i < n - 1; i++)
         sum += arr[i];
 
-    return total - sum; // Return missing number
+    return (total - sum); // Return missing number
 }
 
 int main(int argc, char *argv[])
@@ -38,5 +37,4 @@ int main(int argc, char *argv[])
 
     cout << "Missing Element written to missing.txt\n";
     return 0;
-}
-
+} 
