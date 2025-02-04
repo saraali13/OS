@@ -6,7 +6,7 @@ using namespace std;
 
 int findMissing(int arr[], int n)
 {
-    int total = ((n+1) * (n+2)) / 2;    // Correct sum formula
+    int total = ((n+1) * (n+2)) / 2;    // total sum of first n numbers
 
     int sum = 0;
     for (int i = 0; i < n - 1; i++)
