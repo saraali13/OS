@@ -7,14 +7,17 @@ using namespace std;
 
 int findMissing(int arr[], int n)
 {
-    int max_num = *max_element(arr, arr + n);  // Find max number in array
-    int total = (max_num * (max_num + 1)) / 2; // Correct sum formula
+    int max = *max_element(arr, arr + n); // Find max number in the list
+    int min = *min_element(arr, arr + n); // Find min number in the list
+
+    // Correct formula for expected sum of numbers from min to max
+    int total = (max * (max + 1)) / 2 - (min * (min - 1)) / 2;
 
     int sum = 0;
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) // Sum the given numbers
         sum += arr[i];
 
-    return total - sum; // Return missing number
+    return total - sum; // Return the missing number
 }
 
 int main(int argc, char *argv[])
@@ -41,9 +44,9 @@ int main(int argc, char *argv[])
     }
     int missing = findMissing(arr.data(), n);
 
-    ofstream outFile("missing.txt");
+    ofstream outFile("missing2.txt");
     outFile << "Missing Element: " << missing;
     outFile.close();
-    cout << "Missing Element written to missing.txt\n";
+    cout << "Missing Element written to missing2.txt\n";
     return 0;
 }
