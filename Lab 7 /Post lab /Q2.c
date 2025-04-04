@@ -1,87 +1,76 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <limits.h>
 
-int *numbers;
-int count;
+// Global variables to store results
+double average;
+int minimum, maximum;
 
-typedef struct 
-{
-    int result;
-} ThreadResult;
+// Structure to pass arguments to threads
+typedef struct {
+    int *arr;
+    int size;
+} ThreadData;
 
-void* calculate_average(void* arg) 
-{
-    ThreadResult* res = (ThreadResult*)malloc(sizeof(ThreadResult));
-    int sum = 0;
-    for (int i = 0; i < count; i++) 
-    {
-        sum += numbers[i];
-    }
-    res->result = sum / count;
-    pthread_exit(res);
+// Function to compute the average
+void *compute_average(void *arg) {
+    ThreadData *data = (ThreadData *)arg;
+    double sum = 0;
+    for (int i = 0; i < data->size; i++)
+        sum += data->arr[i];
+    average = sum / data->size;
+    pthread_exit(NULL);
 }
 
-void* find_max(void* arg) 
-{
-    ThreadResult* res = (ThreadResult*)malloc(sizeof(ThreadResult));
-    int max = INT_MIN;
-    for (int i = 0; i < count; i++) 
-    {
-        if (numbers[i] > max) max = numbers[i];
-    }
-    res->result = max;
-    pthread_exit(res);
+// Function to compute the maximum
+void *compute_maximum(void *arg) {
+    ThreadData *data = (ThreadData *)arg;
+    maximum = data->arr[0];
+    for (int i = 1; i < data->size; i++)
+        if (data->arr[i] > maximum)
+            maximum = data->arr[i];
+    pthread_exit(NULL);
 }
 
-void* find_min(void* arg) 
-{
-    ThreadResult* res = (ThreadResult*)malloc(sizeof(ThreadResult));
-    int min = INT_MAX;
-    for (int i = 0; i < count; i++) 
-    {
-        if (numbers[i] < min) min = numbers[i];
-    }
-    res->result = min;
-    pthread_exit(res);
+// Function to compute the minimum
+void *compute_minimum(void *arg) {
+    ThreadData *data = (ThreadData *)arg;
+    minimum = data->arr[0];
+    for (int i = 1; i < data->size; i++)
+        if (data->arr[i] < minimum)
+            minimum = data->arr[i];
+    pthread_exit(NULL);
 }
 
-int main(int argc, char *argv[]) 
-{
-    if (argc < 2) 
-    {
-        printf("Usage: %s num1 num2 ... numN\n", argv[0]);
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Usage: %s <list of numbers>\n", argv[0]);
         return 1;
     }
 
-    count = argc - 1;
-    numbers = (int*)malloc(count * sizeof(int));
-    
-    for (int i = 0; i < count; i++) 
-    {
+    int size = argc - 1;
+    int numbers[size];
+
+    // Convert command-line arguments to integers
+    for (int i = 0; i < size; i++)
         numbers[i] = atoi(argv[i + 1]);
-    }
 
-    pthread_t avg_thread, max_thread, min_thread;
-    ThreadResult *avg_result, *max_result, *min_result;
+    pthread_t threads[3];
+    ThreadData data = {numbers, size};
 
-    pthread_create(&avg_thread, NULL, calculate_average, NULL);
-    pthread_create(&max_thread, NULL, find_max, NULL);
-    pthread_create(&min_thread, NULL, find_min, NULL);
+    // Create threads
+    pthread_create(&threads[0], NULL, compute_average, &data);
+    pthread_create(&threads[1], NULL, compute_maximum, &data);
+    pthread_create(&threads[2], NULL, compute_minimum, &data);
 
-    pthread_join(avg_thread, (void**)&avg_result);
-    pthread_join(max_thread, (void**)&max_result);
-    pthread_join(min_thread, (void**)&min_result);
+    // Wait for threads to finish
+    for (int i = 0; i < 3; i++)
+        pthread_join(threads[i], NULL);
 
-    printf("Average: %d\n", avg_result->result);
-    printf("Maximum: %d\n", max_result->result);
-    printf("Minimum: %d\n", min_result->result);
-
-    free(numbers);
-    free(avg_result);
-    free(max_result);
-    free(min_result);
+    // Print results
+    printf("The average value is %.2f\n", average);
+    printf("The maximum value is %d\n", maximum);
+    printf("The minimum value is %d\n", minimum);
 
     return 0;
 }
