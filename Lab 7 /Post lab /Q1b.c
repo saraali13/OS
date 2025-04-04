@@ -5,59 +5,39 @@
 #define SIZE 10000000
 #define THREADS 10
 
-float *A, *B, *C;
+float A[SIZE], B[SIZE], C[SIZE];
 
-typedef struct 
-{
+typedef struct {
     int start, end;
-} ThreadData;
+} ThreadArgs;
 
-void* add_arrays(void* arg) 
-{
-    ThreadData* data = (ThreadData*)arg;
-    for (int i = data->start; i < data->end; i++) 
-    {
+void* threaded_addition(void* arg) {
+    ThreadArgs* args = (ThreadArgs*)arg;
+    for (int i = args->start; i < args->end; i++) {
         C[i] = A[i] + B[i];
     }
-    pthread_exit(NULL);
+    return NULL;
 }
 
-int main() 
-{
-    A = (float*)malloc(SIZE * sizeof(float));
-    B = (float*)malloc(SIZE * sizeof(float));
-    C = (float*)malloc(SIZE * sizeof(float));
-
-    // Initialize arrays
-    for (int i = 0; i < SIZE; i++) 
-    {
-        A[i] = i * 1.0f;
-        B[i] = (SIZE - i) * 1.0f;
-    }
-
+int main() {
     pthread_t threads[THREADS];
-    ThreadData thread_data[THREADS];
-    int chunk_size = SIZE / THREADS;
+    ThreadArgs args[THREADS];
+    int chunk = SIZE / THREADS;
 
-    // Create threads
-    for (int i = 0; i < THREADS; i++) 
-    {
-        thread_data[i].start = i * chunk_size;
-        thread_data[i].end = (i == THREADS - 1) ? SIZE : (i + 1) * chunk_size;
-        pthread_create(&threads[i], NULL, add_arrays, &thread_data[i]);
+    for (int i = 0; i < SIZE; i++) {
+        A[i] = i;
+        B[i] = SIZE - i;
     }
 
-    // Join threads
-    for (int i = 0; i < THREADS; i++) 
-    {
+    for (int i = 0; i < THREADS; i++) {
+        args[i].start = i * chunk;
+        args[i].end = (i == THREADS - 1) ? SIZE : (i + 1) * chunk;
+        pthread_create(&threads[i], NULL, threaded_addition, &args[i]);
+    }
+
+    for (int i = 0; i < THREADS; i++)
         pthread_join(threads[i], NULL);
-    }
 
-    printf("First 5 results: %.2f, %.2f, %.2f, %.2f, %.2f\n", C[0], C[1], C[2], C[3], C[4]);
-
-    free(A);
-    free(B);
-    free(C);
-
+    printf("Parallel Addition: C[0] = %.1f, C[%d] = %.1f\n", C[0], SIZE - 1, C[SIZE - 1]);
     return 0;
 }
