@@ -1,0 +1,24 @@
+A)
+program enters the main()
+parent process sets up signal handler for SIGCHILD using signal()
+fork() is called to create a child process 
+
+Child process eneters:
+Child prints "I'm alive (temporarily)" and generates a random number and stores it in ret_code.
+Child prints "Return code is <ret_code>" and then Child exits using exit(ret_code)
+
+Parent process after forking, calls pause() to wait for a signal.
+When the child exits, it sends the SIGCHLD signal to the parent.
+Parent wakes up and executes the proc_exit() function.
+
+Inside proc_exit():
+wait3(WNOHANG) checks if a child has exited.
+If yes:
+  Parent reads the child's exit status.
+  Parent prints:
+  Return code: <ret_code>
+If no child has exited yet, it returns from the loop.
+After handling the signal, parent process exits with exit(0).
+
+  
+B)
