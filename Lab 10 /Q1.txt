@@ -1,0 +1,21 @@
+B)
+empty = Number of empty slots in the buffer (used by the producer).
+full = Number of filled slots in the buffer (used by the consumer).
+Workflow:
+Producer Waits on empty (to make sure there's space).
+Produces an item.
+Posts (increments) full.
+
+Consumer Waits on full (to make sure there’s something to consume).
+Consumes an item.
+Posts (increments) empty.
+
+Main Idea:
+These semaphores coordinate access so the buffer doesn’t overflow (producer adds too much) or underflow (consumer takes when nothing is there).
+
+C) 
+Role of sleep() in Producer & Consumer
+sleep(rand() % 3) adds a random delay (0 to 2 seconds).
+Simulates real-world timing where production/consumption doesn’t happen instantly.
+Prevents the output from flying by too fast.
+Helps visualize step-by-step execution and synchronization.
